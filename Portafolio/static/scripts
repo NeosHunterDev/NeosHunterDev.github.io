@@ -1,0 +1,177 @@
+const container = document.querySelector(".container");
+const containercarrossel = container.querySelector(".container-carrossel");
+const carrossel = container.querySelector(".carrossel");
+const carrosselItems = carrossel.querySelectorAll(".carrossel-item");
+
+// Variables para el modal
+const modal = document.getElementById("myModal");
+const modalImagesContainer = document.getElementById("modalImagesContainer");
+const modalText = document.getElementById("modalText");
+const span = document.getElementsByClassName("close")[0];
+
+const imagenes = [
+  ["static/img/venezuela-crisis.jpg", "static/img/texto-fotografico.jpg"], 
+  ["static/img/cartas.jpg", "static/img/texto-cartas.png"], 
+  ["static/img/cadaverExquisito.jpg"], 
+  ["static/img/informe.png"]
+];
+
+const textos = [
+  "En el texto de la foto-escritura no presenté demasiados problemas, ya que fue basado en una mezcla de vivencias reales y hechos ficticios. Este ejercicio fue un aporte a la creatividad, y el único desafío que podría mencionar fue lograr que el contenido no resultara demasiado chocante. El contexto del texto trata sobre un joven de nombre desconocido que enfrenta las adversidades de su país, sufre la pérdida de un amigo y, finalmente, la de su propia vida a manos de la policía venezolana. Estos acontecimientos se reflejan en un mini diario de vida que él escribe.",
+  "El texto de las cartas-Rixit presentó un desafío: en nuestro grupo había dos textos muy buenos y no sabíamos cuál seleccionar. Uno trataba sobre una mujer que mantenía una ciudad siempre y cuando permanecía dormida, y el otro, que fue el seleccionado, narraba la historia de un hombre que pierde la cordura tras ser derrotado en una batalla que se libraba en su subconsciente. Fue una actividad bastante entretenida, tanto por el uso de la creatividad al tener que ingeniárselas para conectar cinco cartas diferentes, como por la capacidad de dar contexto a la historia sin dejar ninguna de las cartas seleccionadas en desuso.",
+  "En el cadáver exquisito, la principal complicación fue no saber qué había antes de que nosotros agregáramos nuestro texto. La idea de la actividad era crear un texto a partir de una línea escrita por cada uno de los participantes. Es cierto que algunos no considerarían esto como una complicación, ya que era la esencia misma de la actividad. Sin embargo, desde otra perspectiva, si no sabías lo que había antes, resultaba difícil continuar el texto de manera lógica. Por lo tanto, para mí, esto sí fue una limitación.",
+  "En el ensayo, la principal complicación fue encontrar un tema que lo hiciera más impactante, ya que mi intención era llegar al lector y presentar un punto de vista diferente al que pueda tener o ayudar a apoyar su postura. En el ensayo hablo sobre la guerra y cómo esta afecta la infancia de los niños en países con conflictos bélicos, como Palestina e Israel. Otra dificultad que encontré fue el uso de las citas; siento que se podría haber mejorado, pero aun así, las citas son comprensibles y el punto al que se quería llegar es claro."
+];
+
+carrosselItems.forEach((img, index) => {
+  img.addEventListener("click", () => {
+    modal.style.display = "block"; 
+    modalImagesContainer.innerHTML = ""; 
+
+    imagenes[index].forEach(src => {
+      const imgElement = document.createElement("img");
+      imgElement.src = src; 
+      imgElement.alt = "Imagen del modal"; 
+      modalImagesContainer.appendChild(imgElement);
+    });
+
+    modalText.textContent = textos[index] || `Descripción para imagen ${index + 1}`;
+  });
+});
+
+span.onclick = function() {
+  modal.style.display = "none";
+};
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+
+let isMouseDown = false;
+let currentMousePos = 0;
+let lastMousePos = 0;
+let lastMoveTo = 0;
+let moveTo = 0;
+
+const createcarrossel = () => {
+  const carrosselProps = onResize();
+  const length = carrosselItems.length;
+  const degress = 360 / length; 
+  const gap = 20;
+  const tz = distanceZ(carrosselProps.w, length, gap);
+
+  const fov = calculateFov(carrosselProps);
+  const height = calculateHeight(tz);
+
+  container.style.width = tz * 2 + gap * length + "px";
+  container.style.height = height + "px";
+
+  carrosselItems.forEach((item, i) => {
+    const degressByItem = degress * i + "deg";
+    item.style.setProperty("--rotatey", degressByItem);
+    item.style.setProperty("--tz", tz + "px");
+  });
+};
+
+const lerp = (a, b, n) => {
+  return n * (a - b) + b;
+};
+
+// https://3dtransforms.desandro.com/carousel
+const distanceZ = (widthElement, length, gap) => {
+  return widthElement / 2 / Math.tan(Math.PI / length) + gap; 
+};
+
+const calculateHeight = (z) => {
+  const t = Math.atan((90 * Math.PI) / 180 / 2);
+  const height = t * 2 * z;
+
+  return height;
+};
+
+const calculateFov = (carrosselProps) => {
+  const perspective = window
+    .getComputedStyle(containercarrossel)
+    .perspective.split("px")[0];
+
+  const length =
+    Math.sqrt(carrosselProps.w * carrosselProps.w) +
+    Math.sqrt(carrosselProps.h * carrosselProps.h);
+  const fov = 2 * Math.atan(length / (2 * perspective)) * (180 / Math.PI);
+  return fov;
+};
+
+const getPosX = (x) => {
+  currentMousePos = x;
+
+  moveTo = currentMousePos < lastMousePos ? moveTo - 2 : moveTo + 2;
+
+  lastMousePos = currentMousePos;
+};
+
+const update = () => {
+  lastMoveTo = lerp(moveTo, lastMoveTo, 0.05);
+  carrossel.style.setProperty("--rotatey", lastMoveTo + "deg");
+
+  requestAnimationFrame(update);
+};
+
+const onResize = () => {
+  const boundingcarrossel = containercarrossel.getBoundingClientRect();
+
+  const carrosselProps = {
+    w: boundingcarrossel.width,
+    h: boundingcarrossel.height,
+  };
+
+  return carrosselProps;
+};
+
+const initEvents = () => {
+  carrossel.addEventListener("mousedown", () => {
+    isMouseDown = true;
+    carrossel.style.cursor = "grabbing";
+  });
+  carrossel.addEventListener("mouseup", () => {
+    isMouseDown = false;
+    carrossel.style.cursor = "grab";
+  });
+  container.addEventListener("mouseleave", () => (isMouseDown = false));
+
+  carrossel.addEventListener(
+    "mousemove",
+    (e) => isMouseDown && getPosX(e.clientX)
+  );
+
+  carrossel.addEventListener("touchstart", () => {
+    isMouseDown = true;
+    carrossel.style.cursor = "grabbing";
+  });
+  carrossel.addEventListener("touchend", () => {
+    isMouseDown = false;
+    carrossel.style.cursor = "grab";
+  });
+  container.addEventListener(
+    "touchmove",
+    (e) => isMouseDown && getPosX(e.touches[0].clientX)
+  );
+
+  window.addEventListener("resize", createcarrossel);
+
+  update();
+  createcarrossel();
+  const leftArrow = document.getElementById("leftArrow");
+  const rightArrow = document.getElementById("rightArrow");
+  
+  leftArrow.addEventListener("click", () => {
+    moveTo -= 30; 
+  });
+  
+  rightArrow.addEventListener("click", () => {
+    moveTo += 30;
+  });
+};
+
+initEvents();

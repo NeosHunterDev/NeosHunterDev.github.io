@@ -1,0 +1,213 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,700;1,700&display=swap");
+
+html, body { 
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Nunito", cursive;
+    color: #efefef;
+    text-align: center;
+    background-color: #212123;
+    min-height: 100vh;
+}
+
+.banner {
+    background-image: url('fondoBaner.jpg');
+    background-size: cover; 
+    background-position: center;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    position: static; 
+    z-index: 1000;
+}
+
+.carrusel {
+    background-image: url('fondoTexto.jpg');
+    background-size: cover; 
+    background-position: center;
+    height: 70vh; 
+}
+
+.conteudo__geral {
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    height: calc(85vh - 80px); 
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-carrossel {
+    --widthItem: 150px;
+    --heightItem: 100px;
+    width: var(--widthItem);
+    height: var(--heightItem);
+    perspective: 1000px;
+
+
+}
+
+.carrossel {
+    --rotatey: 0;
+    font-size: 4rem;
+    position: relative;
+    transform: rotatey(var(--rotatey));
+    transform-style: preserve-3d;
+    user-select: none;
+    cursor: grab;
+}
+
+.carrossel-item {
+    opacity: 0.9;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    transition: opacity 0.5s;
+}
+
+.carrossel-item:hover {
+    opacity: 1;
+}
+
+.carrossel,
+.carrossel-item {
+    width: 100%;
+    height: 100%;
+}
+
+.carrossel-item:nth-child(1) {
+    --rotatey: 0;
+    transform: rotatey(var(--rotatey)) translatez(var(--tz));
+    background: black
+}
+
+.carrossel-item:nth-child(2) {
+    --rotatey: 0;
+    transform: rotatey(var(--rotatey)) translatez(var(--tz));
+    background: black
+}
+
+.carrossel-item:nth-child(3) {
+    --rotatey: 0;
+    transform: rotatey(var(--rotatey)) translatez(var(--tz));
+    background: black
+}
+
+.carrossel-item:nth-child(4) {
+    --rotatey: 0;
+    transform: rotatey(var(--rotatey)) translatez(var(--tz));
+    background: black
+}
+
+@media screen and (min-width: 576px) {
+    .container-carrossel {
+        --widthItem: 250px;
+        --heightItem: 200px;
+    } 
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+  
+#leftArrow {
+    left: 0;
+}
+  
+#rightArrow {
+    right: 0;
+}
+
+/* Estilos para el modal */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+}
+
+.modal-content {
+    background-color: rgba(102, 91, 91, 0.5);
+    margin: 10% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+    border-radius: 10px;
+    transform: translateY(-70px);
+}
+
+.modal-body {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+#modalImagesContainer {
+    display: flex; 
+    flex-wrap: wrap;
+    width: 40%;
+    gap: 10px;
+}
+
+#modalImagesContainer img {
+    max-width: 100%;
+    height: auto;
+}
+
+#modalText {
+    width: 50%;
+    padding-left: 20px; 
+    text-align: left;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    cursor: pointer;
+}
+
+.text-below-carousel {
+    padding: 20px;
+    text-align: center;
+}
+
+.imagenes-below-text {
+    padding: 20px;
+    text-align: center;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
